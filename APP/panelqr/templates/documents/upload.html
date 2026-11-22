@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Nuevo documento · Panel QR{% endblock %}
+{% block content %}
+  <p class="breadcrumb"><a href="{{ url_for('main.panel_detail', code=panel.codigo_qr) }}">{{ panel.codigo_qr }}</a> / Nuevo documento</p>
+  <section class="card narrow">
+    <div class="card-heading"><h1>Subir documento</h1></div>
+    <form method="post" enctype="multipart/form-data" class="form-stack padded">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="titulo">Título</label><input id="titulo" name="titulo" maxlength="200" required>
+      <label for="descripcion">Descripción</label><textarea id="descripcion" name="descripcion" rows="3"></textarea>
+      <label for="id_tipo_documento">Tipo de documento</label>
+      <select id="id_tipo_documento" name="id_tipo_documento" required>
+        {% for type in types %}<option value="{{ type.id_tipo_documento }}">{{ type.nombre }}</option>{% endfor %}
+      </select>
+      <label for="numero_version">Número de versión</label><input id="numero_version" name="numero_version" maxlength="20" placeholder="1.0" required>
+      <label for="notas">Notas de esta versión</label><textarea id="notas" name="notas" rows="2"></textarea>
+      <label for="archivo">Archivo (PDF, PNG o JPEG; máximo 20 MB)</label>
+      <input id="archivo" name="archivo" type="file" accept=".pdf,.png,.jpg,.jpeg" required>
+      <div class="form-actions"><a class="button secondary" href="{{ url_for('main.panel_detail', code=panel.codigo_qr) }}">Cancelar</a>
+        <button class="button primary" type="submit">Guardar versión</button></div>
+    </form>
+  </section>
+{% endblock %}

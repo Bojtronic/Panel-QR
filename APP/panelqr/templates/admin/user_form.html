@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Crear usuario' if user is none else 'Editar usuario' }} · Panel QR{% endblock %}
+{% block content %}
+  <p class="breadcrumb"><a href="{{ url_for('admin.users') }}">Usuarios</a> / {{ 'Nuevo' if user is none else user.email }}</p>
+  <header class="page-heading"><div><p class="eyebrow">Administración</p>
+    <h1>{{ 'Crear usuario' if user is none else 'Editar usuario' }}</h1></div></header>
+  <form method="post" class="card form-stack padded">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="nombre">Nombre</label><input id="nombre" name="nombre" maxlength="150" value="{{ user.nombre if user else '' }}" required>
+    <label for="email">Correo electrónico</label><input id="email" name="email" type="email" maxlength="255" value="{{ user.email if user else '' }}" required>
+    <label for="password">{{ 'Contraseña inicial (mínimo 12 caracteres)' if user is none else 'Nueva contraseña (opcional, mínimo 12 caracteres)' }}</label>
+    <input id="password" name="password" type="password" minlength="12" autocomplete="new-password" {{ 'required' if user is none else '' }}>
+    {% if user %}
+      <label class="check-row"><input type="checkbox" name="activo" {{ 'checked' if user.activo else '' }}> Cuenta activa</label>
+    {% endif %}
+    <fieldset><legend>Roles</legend><div class="check-grid">
+      {% for role in roles %}<label class="check-row"><input type="checkbox" name="roles" value="{{ role.id_rol }}" {{ 'checked' if role.id_rol in selected_roles else '' }}> {{ role.nombre }}</label>{% endfor %}
+    </div></fieldset>
+    <fieldset><legend>Grupos autorizados</legend><div class="check-grid">
+      {% for group in groups %}<label class="check-row"><input type="checkbox" name="groups" value="{{ group.id_grupo }}" {{ 'checked' if group.id_grupo in selected_groups else '' }}> {{ group.nombre }}</label>{% endfor %}
+    </div><p class="muted">El acceso al grupo incluye los paneles que pertenecen a él.</p></fieldset>
+    <fieldset><legend>Paneles autorizados</legend><div class="check-grid">
+      {% for panel in panels %}<label class="check-row"><input type="checkbox" name="panels" value="{{ panel.id_panel }}" {{ 'checked' if panel.id_panel in selected_panels else '' }}> {{ panel.codigo_qr }} · {{ panel.nombre }}</label>{% endfor %}
+    </div></fieldset>
+    <div class="form-actions"><a class="button secondary" href="{{ url_for('admin.users') }}">Cancelar</a>
+      <button class="button primary" type="submit">Guardar usuario</button></div>
+  </form>
+{% endblock %}

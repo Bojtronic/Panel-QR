@@ -1,0 +1,8 @@
+Panel QR - Ficha técnica P-001
+Versión: 1.1 (vigente)
+
+Panel principal de distribución
+Ubicación: Edificio principal, planta baja
+Alimentación: 400 V trifásica
+Última revisión: inspección preventiva
+Este archivo de texto es una muestra. Sustituir por documentación aprobada.

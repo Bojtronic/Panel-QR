@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1f33">
+  <title>{% block title %}Panel QR{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+{% if current_user %}
+  <div class="shell">
+    <nav class="side" aria-label="Navegación principal">
+      <a class="brand" href="{{ url_for('main.dashboard') }}">
+        <span class="logo" aria-hidden="true">QR</span>
+        <span>Panel QR<small>Documentación técnica</small></span>
+      </a>
+      <span class="nav-label">Operación</span>
+      <a class="nav-link" href="{{ url_for('main.dashboard') }}">Panel de control</a>
+      <a class="nav-link" href="{{ url_for('main.panel_list') }}">Paneles</a>
+      {% if 'usuario.gestionar' in permissions() %}
+        <span class="nav-label">Administración</span>
+        <a class="nav-link" href="{{ url_for('admin.users') }}">Usuarios</a>
+      {% endif %}
+      {% if 'permiso.gestionar' in permissions() %}
+        <a class="nav-link" href="{{ url_for('admin.permissions') }}">Permisos</a>
+      {% endif %}
+      {% if 'auditoria.ver' in permissions() %}
+        <a class="nav-link" href="{{ url_for('admin.audit') }}">Auditoría</a>
+      {% endif %}
+      <div class="side-spacer"></div>
+      <div class="side-account">
+        <span class="avatar">{{ current_user.nombre[:1]|upper }}</span>
+        <span class="account-name">{{ current_user.nombre }}<small>{{ current_user.roles|join(', ') }}</small></span>
+        <form method="post" action="{{ url_for('auth.logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="link-button" type="submit">Salir</button>
+        </form>
+      </div>
+    </nav>
+    <div class="workspace">
+      <header class="topbar">
+        <span class="muted">Panel QR / <a href="{{ url_for('main.dashboard') }}">Inicio</a></span>
+        <span class="topbar-user">{{ current_user.email }}</span>
+      </header>
+      <main class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-stack" aria-live="polite">
+              {% for category, message in messages %}
+                <p class="flash {{ category }}">{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="footer">Panel QR · Acceso interno</footer>
+    </div>
+  </div>
+{% else %}
+  <main class="auth-page">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <p class="flash {{ category }}">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block public_content %}{% endblock %}
+  </main>
+{% endif %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

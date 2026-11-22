@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Auditoría · Panel QR{% endblock %}
+{% block content %}
+  <header class="page-heading"><div><p class="eyebrow">Administración</p><h1>Auditoría</h1>
+    <p class="muted">Últimos 200 eventos de seguridad y operación.</p></div></header>
+  <section class="card">
+    {% if events %}
+      <div class="table-wrap"><table>
+        <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Entidad</th><th>Resultado</th><th>Detalle</th></tr></thead>
+        <tbody>{% for event in events %}
+          <tr><td>{{ event.fecha_evento.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ event.email or 'Cuenta eliminada' }}</td>
+            <td>{{ event.accion }}</td><td>{{ event.id_entidad or event.entidad or '—' }}</td>
+            <td><span class="status {{ event.resultado|lower }}">{{ event.resultado }}</span></td><td>{{ event.detalle or '—' }}</td></tr>
+        {% endfor %}</tbody>
+      </table></div>
+    {% else %}<p class="empty-state">No hay eventos registrados.</p>{% endif %}
+  </section>
+{% endblock %}

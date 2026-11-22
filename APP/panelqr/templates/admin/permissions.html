@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Permisos · Panel QR{% endblock %}
+{% block content %}
+  <header class="page-heading"><div><p class="eyebrow">Administración</p><h1>Permisos por rol</h1>
+    <p class="muted">El servidor valida los permisos en cada operación.</p></div></header>
+  <form method="post" class="card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="table-wrap"><table class="permission-table">
+      <thead><tr><th>Permiso</th>{% for role in roles %}<th>{{ role.nombre }}</th>{% endfor %}</tr></thead>
+      <tbody>{% for permission in permissions %}
+        <tr><td><code>{{ permission.codigo }}</code><small>{{ permission.descripcion }}</small></td>
+          {% for role in roles %}<td class="center">
+            <input type="checkbox" name="role_{{ role.id_rol }}" value="{{ permission.id_permiso }}"
+              aria-label="{{ role.nombre }}: {{ permission.codigo }}"
+              {{ 'checked' if permission.id_permiso in selected[role.id_rol] else '' }}>
+          </td>{% endfor %}
+        </tr>
+      {% endfor %}</tbody>
+    </table></div>
+    <div class="form-actions padded"><button class="button primary" type="submit">Guardar permisos</button></div>
+  </form>
+{% endblock %}

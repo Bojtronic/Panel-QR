@@ -1,0 +1,5 @@
+Panel QR - Diagrama eléctrico P-001
+Versión: 1.0 (vigente)
+
+Archivo de muestra para validar el acceso documental y la auditoría.
+Sustituir por el diagrama eléctrico oficial en formato PDF o imagen.

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Historial documental · Panel QR{% endblock %}
+{% block content %}
+  <p class="breadcrumb"><a href="{{ url_for('main.panel_list') }}">Paneles</a> /
+    <a href="{{ url_for('main.panel_detail', code=document.codigo_qr) }}">{{ document.codigo_qr }}</a> /
+    {{ document.titulo }}</p>
+  <header class="page-heading"><div><p class="eyebrow">Historial de versiones</p><h1>{{ document.titulo }}</h1>
+    <p class="muted">{{ document.panel }}{% if document.descripcion %} · {{ document.descripcion }}{% endif %}</p></div></header>
+  <section class="card">
+    {% if versions %}
+      <div class="table-wrap"><table>
+        <thead><tr><th>Versión</th><th>Archivo</th><th>Subida</th><th>Notas</th><th>Estado</th><th></th></tr></thead>
+        <tbody>{% for version in versions %}
+          <tr><td>{{ version.numero_version }}</td><td>{{ version.nombre_archivo }}</td>
+            <td>{{ version.fecha_subida.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ version.notas or '—' }}</td>
+            <td>{% if version.es_actual %}<span class="status activo">Vigente</span>{% else %}<span class="muted">Anterior</span>{% endif %}</td>
+            <td><a href="{{ url_for('main.serve_document', version_id=version.id_version) }}" target="_blank" rel="noopener">Abrir</a></td></tr>
+        {% endfor %}</tbody>
+      </table></div>
+    {% else %}<p class="empty-state">No hay versiones registradas.</p>{% endif %}
+  </section>
+{% endblock %}

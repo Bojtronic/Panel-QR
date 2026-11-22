@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Usuarios · Panel QR{% endblock %}
+{% block content %}
+  <header class="page-heading"><div><p class="eyebrow">Administración</p><h1>Usuarios</h1>
+    <p class="muted">Cuentas, roles y alcance de acceso a paneles.</p></div>
+    <a class="button primary" href="{{ url_for('admin.new_user') }}">Crear usuario</a></header>
+  <section class="card">
+    {% if users %}
+      <div class="table-wrap"><table>
+        <thead><tr><th>Nombre</th><th>Correo</th><th>Rol(es)</th><th>Estado</th><th></th></tr></thead>
+        <tbody>{% for user in users %}
+          <tr><td>{{ user.nombre }}</td><td>{{ user.email }}</td><td>{{ user.roles or 'Sin rol' }}</td>
+            <td><span class="status {{ 'activo' if user.activo else 'inactivo' }}">{{ 'Activo' if user.activo else 'Inactivo' }}</span></td>
+            <td><a href="{{ url_for('admin.edit_user', user_id=user.id_usuario) }}">Editar</a></td></tr>
+        {% endfor %}</tbody>
+      </table></div>
+    {% else %}<p class="empty-state">No hay usuarios registrados.</p>{% endif %}
+  </section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ panel.codigo_qr }} · Panel QR{% endblock %}
+{% block content %}
+  <p class="breadcrumb"><a href="{{ url_for('main.panel_list') }}">Paneles</a> / {{ panel.codigo_qr }}</p>
+  <section class="card panel-overview">
+    <div class="panel-overview-main">
+      <p class="eyebrow">Identificador {{ panel.codigo_qr }}</p>
+      <h1>{{ panel.nombre }}</h1>
+      <p class="muted">{{ panel.grupo or 'Sin grupo asignado' }}{% if panel.ubicacion %} · {{ panel.ubicacion }}{% endif %}</p>
+      <span class="status {{ panel.estado|lower }}">{{ panel.estado|replace('_', ' ') }}</span>
+    </div>
+    <div class="qr-card">
+      <img src="{{ url_for('main.panel_qr', code=panel.codigo_qr) }}" alt="Código QR de {{ panel.codigo_qr }}">
+      <span class="muted">Enlace permanente al panel</span>
+    </div>
+  </section>
+  {% if can_edit %}
+    <details class="card">
+      <summary class="card-heading">Editar información del panel</summary>
+      <form method="post" action="{{ url_for('main.edit_panel', code=panel.codigo_qr) }}" class="form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field"><label for="edit-name">Nombre</label><input id="edit-name" name="nombre" maxlength="150" value="{{ panel.nombre }}" required></div>
+        <div class="field"><label for="edit-location">Ubicación</label><input id="edit-location" name="ubicacion" maxlength="255" value="{{ panel.ubicacion or '' }}"></div>
+        <div class="field"><label for="edit-group">Grupo</label><select id="edit-group" name="id_grupo">
+          <option value="">Sin grupo</option>{% for group in groups %}
+            <option value="{{ group.id_grupo }}" {{ 'selected' if group.id_grupo == panel.id_grupo else '' }}>{{ group.nombre }}</option>
+          {% endfor %}
+        </select></div>
+        <div class="field"><label for="edit-status">Estado</label><select id="edit-status" name="estado">
+          {% for state in ['ACTIVO', 'INACTIVO', 'MANTENIMIENTO'] %}
+            <option value="{{ state }}" {{ 'selected' if state == panel.estado else '' }}>{{ state|replace('_', ' ') }}</option>
+          {% endfor %}
+        </select></div>
+        <div class="field form-action"><button class="button primary" type="submit">Guardar cambios</button></div>
+      </form>
+    </details>
+  {% endif %}
+  <section class="card">
+    <div class="card-heading"><h2>Documentación técnica</h2>
+      {% if can_manage %}<a class="button primary small" href="{{ url_for('main.upload_document', code=panel.codigo_qr) }}">Subir documento</a>{% endif %}
+    </div>
+    {% if documents %}
+      <div class="panel-list">
+        {% for document in documents %}
+          <article class="panel-row">
+            <div class="panel-symbol document-symbol" aria-hidden="true">DOC</div>
+            <div class="panel-info">
+              <a class="panel-title" href="{{ url_for('main.document_history', document_id=document.id_documento) }}">{{ document.titulo }}</a>
+              <span class="muted">{{ document.tipo }}{% if document.numero_version %} · Versión {{ document.numero_version }}{% else %} · Sin archivo vigente{% endif %}</span>
+            </div>
+            {% if document.id_version %}
+              <a class="button secondary small" href="{{ url_for('main.serve_document', version_id=document.id_version) }}" target="_blank" rel="noopener">Abrir</a>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-state">Este panel todavía no tiene documentos disponibles.</p>
+    {% endif %}
+  </section>
+{% endblock %}

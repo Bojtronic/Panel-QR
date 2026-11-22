@@ -1,0 +1,6 @@
+Panel QR - Procedimiento de mantenimiento P-002
+Versión: 1.0 (vigente)
+
+Archivo de muestra para el panel P-002.
+Antes de realizar mantenimiento, aplicar los procedimientos de seguridad de la empresa.
+Sustituir por el procedimiento técnico aprobado.

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Paneles · Panel QR{% endblock %}
+{% block content %}
+  <header class="page-heading">
+    <div><p class="eyebrow">Operación</p><h1>Consulta de paneles</h1>
+      <p class="muted">Busca un equipo o identifica su código QR.</p></div>
+  </header>
+  <section class="card scan-card">
+    <div class="card-heading"><h2>Identificar panel</h2><span id="scanner-status" class="muted" role="status">Usa la cámara o una imagen QR.</span></div>
+    <div class="scan-tools">
+      <button class="button secondary" id="start-scan" type="button">Abrir cámara</button>
+      <label class="button secondary file-button" for="qr-image">Leer imagen QR</label>
+      <input id="qr-image" type="file" accept="image/*" capture="environment">
+      <button class="button text-button" id="stop-scan" type="button" hidden>Detener cámara</button>
+    </div>
+    <video id="qr-video" class="scanner-video" playsinline muted hidden></video>
+    <form method="get" action="{{ url_for('main.panel_list') }}" class="search-form" id="panel-search">
+      <label class="sr-only" for="q">Buscar por código, nombre o ubicación</label>
+      <input id="q" name="q" value="{{ query }}" placeholder="Ej. P-001 o Planta baja">
+      <button class="button primary" type="submit">Buscar</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="card-heading"><h2>Paneles con acceso</h2><span class="muted">{{ panels|length }} resultado(s)</span></div>
+    {% if panels %}
+      <div class="panel-list">
+        {% for panel in panels %}
+          <article class="panel-row">
+            <div class="panel-symbol" aria-hidden="true">QR</div>
+            <div class="panel-info">
+              <a class="panel-title" href="{{ url_for('main.panel_detail', code=panel.codigo_qr) }}">
+                {{ panel.codigo_qr }} · {{ panel.nombre }}</a>
+              <span class="muted">{{ panel.grupo or 'Sin grupo' }}{% if panel.ubicacion %} · {{ panel.ubicacion }}{% endif %}</span>
+            </div>
+            <span class="status {{ panel.estado|lower }}">{{ panel.estado|replace('_', ' ') }}</span>
+            <a class="button secondary small" href="{{ url_for('main.panel_detail', code=panel.codigo_qr) }}">Ver</a>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-state">No se encontraron paneles accesibles con esos criterios.</p>
+    {% endif %}
+  </section>
+
+  {% if can_manage %}
+    <section class="card">
+      <div class="card-heading"><h2>Registrar panel</h2></div>
+      <form method="post" action="{{ url_for('main.create_panel') }}" class="form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field"><label for="codigo_qr">Código QR</label><input id="codigo_qr" name="codigo_qr" maxlength="128" required></div>
+        <div class="field"><label for="nombre">Nombre</label><input id="nombre" name="nombre" maxlength="150" required></div>
+        <div class="field"><label for="ubicacion">Ubicación</label><input id="ubicacion" name="ubicacion" maxlength="255"></div>
+        <div class="field"><label for="id_grupo">Grupo</label><select id="id_grupo" name="id_grupo">
+          <option value="">Sin grupo</option>{% for group in groups %}
+            <option value="{{ group.id_grupo }}">{{ group.nombre }}</option>{% endfor %}
+        </select></div>
+        <div class="field form-action"><button class="button primary" type="submit">Guardar panel</button></div>
+      </form>
+    </section>
+  {% endif %}
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/scanner.js') }}" defer></script>{% endblock %}

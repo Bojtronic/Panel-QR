@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Panel de control · Panel QR{% endblock %}
+{% block content %}
+  <header class="page-heading">
+    <div><p class="eyebrow">Resumen</p><h1>Panel de control</h1>
+      <p class="muted">Estado general de paneles y actividad del sistema.</p></div>
+    <a class="button primary" href="{{ url_for('main.panel_list') }}">Consultar paneles</a>
+  </header>
+  <section class="stats" aria-label="Indicadores">
+    <article class="card stat"><span>Paneles registrados</span><strong>{{ stats.paneles }}</strong></article>
+    <article class="card stat"><span>En mantenimiento</span><strong>{{ stats.mantenimiento }}</strong></article>
+    <article class="card stat"><span>Usuarios activos</span><strong>{{ stats.usuarios_activos }}</strong></article>
+    <article class="card stat"><span>Accesos denegados · 7 días</span><strong>{{ stats.denegados }}</strong></article>
+  </section>
+  {% if 'auditoria.ver' in permissions() %}
+    <section class="card">
+      <div class="card-heading"><h2>Actividad reciente</h2>
+        <a href="{{ url_for('admin.audit') }}">Ver auditoría</a></div>
+      {% if activity %}
+        <div class="table-wrap"><table>
+          <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Elemento</th><th>Resultado</th></tr></thead>
+          <tbody>{% for event in activity %}
+            <tr><td>{{ event.fecha_evento.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ event.email or 'Cuenta eliminada' }}</td><td>{{ event.accion }}</td>
+              <td>{{ event.id_entidad or event.entidad or '—' }}</td>
+              <td><span class="status {{ event.resultado|lower }}">{{ event.resultado }}</span></td></tr>
+          {% endfor %}</tbody>
+        </table></div>
+      {% else %}<p class="empty-state">Todavía no hay actividad registrada.</p>{% endif %}
+    </section>
+  {% else %}
+    <section class="card welcome">
+      <h2>Consulta segura de documentación</h2>
+      <p>Busca un panel por código, ubicación o nombre, o escanea su QR.</p>
+      <a class="button primary" href="{{ url_for('main.panel_list') }}">Buscar un panel</a>
+    </section>
+  {% endif %}
+{% endblock %}

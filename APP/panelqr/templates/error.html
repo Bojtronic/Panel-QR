@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · Panel QR{% endblock %}
+{% block content %}
+  <section class="card error-card"><h1>{{ title }}</h1><p>{{ message }}</p>
+    <a class="button primary" href="{{ url_for('main.dashboard') }}">Volver al inicio</a></section>
+{% endblock %}
